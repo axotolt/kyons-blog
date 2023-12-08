@@ -1,0 +1,44 @@
+---
+import AppLayout from '@layouts/AppLayout.astro';
+import Layout from '@layouts/Layout.astro';
+import 'kyons-ckeditor5-custom-build/sample/styles.css';
+import 'kyons-ckeditor5-custom-build/sample/kyons_content_style.css';
+// import { firestore } from '@lib/firebase/server';
+// import { getUser } from '@lib/utils';
+
+/* Get session cookie */
+const sessionCookie = Astro.cookies.get('session') ? Astro.cookies.get('session')!.value : null;
+if (!sessionCookie) {
+  return Astro.redirect('/signin');
+}
+
+/* Verify session cookie and get user */
+// const user = await getUser(sessionCookie);
+// if (!user) {
+//   return Astro.redirect('/signin');
+// }
+
+/* get birthdates from firestore */
+// const querySnashot = await firestore.collection('birthdays').where('authorId', '==', user.uid).get();
+// console.log(Editor);
+/* compute difference in days and sort */
+---
+
+<Layout title='Dashboard'>
+  <!-- <Editor client:only /> -->
+  <AppLayout>
+    <main class='w-full grow flex flex-col items-center px-4'>
+      <h1 class='text-xl sm:text-3xl max-w-xl dark:text-zinc-100 w-full text-zinc-900 font-semibold mt-10 mb-6'>
+        CKEditor 5
+      </h1>
+      <div id='editor' style='height: 500px;'></div>
+    </main>
+  </AppLayout>
+</Layout>
+<!-- <script src='node_modules/kyons-ckeditor5-custom-build/build/editor.js'></script> -->
+<script>
+  import ClassicEditor from 'kyons-ckeditor5-custom-build';
+
+  const editor = document.querySelector('#editor');
+  ClassicEditor.create(editor);
+</script>
