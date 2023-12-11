@@ -1,13 +1,14 @@
 import { initializeApp } from 'firebase/app';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyBkzkhL_3lhKDW_mct3h0EowDK6nP9YoVQ',
-  authDomain: 'kyonsvn.firebaseapp.com',
-  projectId: 'kyonsvn',
-  storageBucket: 'kyonsvn.appspot.com',
-  messagingSenderId: '830127784291',
-  appId: '1:830127784291:web:1168b582fc55f6be1b5356',
-  measurementId: 'G-21ZCN76MYB',
+  apiKey: "AIzaSyB94ge2DejtJ3Dl0yfncrM6rueklrhh-lw",
+  authDomain: "test-cbf14.firebaseapp.com",
+  databaseURL: "https://test-cbf14-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "test-cbf14",
+  storageBucket: "test-cbf14.appspot.com",
+  messagingSenderId: "277111503927",
+  appId: "1:277111503927:web:b4b3b945a21b695d84d3b2",
+  measurementId: "G-G2N405NY57"
 };
 
 export const app = initializeApp(firebaseConfig);

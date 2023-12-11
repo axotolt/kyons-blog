@@ -1,0 +1,29 @@
+---
+import AppLayout from "@layouts/AppLayout.astro";
+import Layout from "@layouts/Layout.astro";
+
+export const prerender = true;
+---
+
+<Layout title="Add a new blog">
+  <main class="w-full grow flex flex-col items-center px-4">
+    <div id="editor" style="height: 500px; width: 100%"><p>abc</p></div>
+  </main>
+</Layout>
+<script>
+  import ClassicEditor from "kyons-markdown-editor";
+
+  // function ready() {
+  //   ClassicEditor.create(document.querySelector("#editor"), {});
+  // }
+  // document.addEventListener("DOMContentLoaded", ready);
+
+  ClassicEditor.create(document.querySelector("#editor"))
+    .then((editor) => {
+      const data = editor.getData();
+      console.log(data);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+</script>

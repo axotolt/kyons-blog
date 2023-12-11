@@ -1,6 +1,6 @@
 export default function SignoutButton() {
   async function signout() {
-    const res = await fetch("/api/auth/logout");
+    const res = await fetch("/api/auth/signout");
     if (!res.ok) {
       const data = await res.json();
       return data;

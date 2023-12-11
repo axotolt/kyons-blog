@@ -1,0 +1,54 @@
+---
+import AppLayout from "@layouts/AppLayout.astro";
+import Layout from "@layouts/Layout.astro";
+import { firestore } from "@lib/firebase/server";
+import { getUser } from "@lib/utils";
+import CKEditor from "@components/CKEditor.astro";
+import type { loadApp } from "astro/app/node";
+
+/* Get session cookie */
+const sessionCookie = Astro.cookies.get("session")
+  ? Astro.cookies.get("session")!.value
+  : null;
+if (!sessionCookie) {
+  return Astro.redirect("/signin");
+}
+
+/* Verify session cookie and get user */
+const user = await getUser(sessionCookie);
+if (!user) {
+  return Astro.redirect("/signin");
+}
+
+// /* get birthdates from firestore */
+// const querySnashot = await firestore
+//   .collection("blogs")
+//   .where("authorId", "==", user.uid)
+//   .get();
+// console.log(Editor);
+/* compute difference in days and sort */
+---
+
+<Layout title="Add a new blog">
+  <!-- <Editor client:only /> -->
+  <AppLayout />
+
+  <main class="w-full grow flex flex-col items-center px-4">
+    <h1
+      class="text-xl sm:text-3xl max-w-xl white:text-zinc-100 w-full text-zinc-900 font-semibold mt-10 mb-6"
+    >
+      Add a new blog
+    </h1>
+    <form method="post" action="/api/blogs">
+      <label for="title">Title</label>
+      <input type="text" id="title" name="title" />
+      <label for="tag">Tags</label>
+      <input type="text" id="tags" name="tags" />
+      <label for="author">Author: <strong>{user.displayName}</strong></label>
+      <input type="hidden" id="author" name="author" value={user.displayName} />
+      <CKEditor />
+      <input type="hidden" id="editorContent" name="editorContent" />
+      <button type="submit">Create</button>
+    </form>
+  </main>
+</Layout>
