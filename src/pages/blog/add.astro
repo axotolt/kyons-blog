@@ -4,7 +4,6 @@ import Layout from "@layouts/Layout.astro";
 import { firestore } from "@lib/firebase/server";
 import { getUser } from "@lib/utils";
 import CKEditor from "@components/CKEditor.astro";
-import type { loadApp } from "astro/app/node";
 
 /* Get session cookie */
 const sessionCookie = Astro.cookies.get("session")
@@ -48,7 +47,7 @@ if (!user) {
       <input type="hidden" id="author" name="author" value={user.displayName} />
       <CKEditor />
       <input type="hidden" id="editorContent" name="editorContent" />
-      <button type="submit">Create</button>
+      <button type="submit" value="Submit">Create</button>
     </form>
   </main>
 </Layout>

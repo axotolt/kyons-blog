@@ -10,7 +10,7 @@ export const POST: APIRoute = async ({ params, redirect, request }) => {
   const title = formData.get("title")?.toString();
   const tags = formData.get("tags")?.toString();
   const author = formData.get("author")?.toString();
-  const content = formData.get("editorContent")?.toString();
+  const content = formData.get("content")?.toString();
   // const isBestFriend = formData.get("isBestFriend") === "on";
 
   if (!title || !author) {
