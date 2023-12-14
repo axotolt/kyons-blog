@@ -1,0 +1,53 @@
+---
+import { app } from "../../src/lib/firebase/server";
+import { getFirestore } from "firebase-admin/firestore";
+
+const { id } = Astro.params;
+
+if (!id) {
+  var text = "Add blog content";
+} else {
+  const db = getFirestore(app);
+  const blogsRef = db.collection("blogs");
+  const blogSnapshot = await blogsRef.doc(id).get();
+  const blog = blogSnapshot.data();
+  var text = blog.content as string;
+}
+---
+
+<textarea name="content" id="editor"> {text}</textarea>
+<script>
+  import ClassicEditor from "axotolt-markdown-editor";
+  function ready() {
+    ClassicEditor.create(document.querySelector("#editor"), {
+      licenseKey: "",
+      simpleUpload: {
+        uploadUrl: "gs://test-cbf14.appspot.com",
+
+        withCredentials: false,
+        headers: {
+          "X-CSRF-TOKEN": "CSRF-Token",
+          Authorization: "Bearer <JSON Web Token>",
+        },
+      },
+    });
+    // .then((editor) => {
+    //   window.editor = editor;
+    //   var link = document.createElement("link");
+    //   link.rel = "stylesheet";
+    //   link.type = "text/css";
+    //   link.href = "kyons_content_style.css";
+
+    //   document.head.appendChild(link);
+    // })
+    // .catch((error) => {
+    //   console.error("Oops, something went wrong!");
+    //   console.error(
+    //     "Please, report the following error on https://github.com/ckeditor/ckeditor5/issues with the build id and the error stack trace:"
+    //   );
+    //   console.warn("Build id: ao91qyl6c6wy-nohdljl880ze");
+    //   console.error(error);
+    // });
+  }
+  document.addEventListener("DOMContentLoaded", ready);
+</script>

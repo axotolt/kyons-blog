@@ -1,0 +1,39 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { app } from "../../../src/lib/firebase/server";
+import { getFirestore } from "firebase-admin/firestore";
+
+interface Blog {
+  title: string;
+  tags: string;
+  author: string;
+  content: string;
+}
+
+const { id } = Astro.params;
+
+if (!id) {
+  return Astro.redirect("/404");
+}
+
+const db = getFirestore(app);
+const blogsRef = db.collection("blogs");
+const blogSnapshot = await blogsRef.doc(id).get();
+
+if (!blogSnapshot.exists) {
+  return Astro.redirect("/404");
+}
+const blog = blogSnapshot.data() as Blog;
+// const blogContent = editor.setData({blog.content})
+---
+
+<Layout title={blog.title}>
+  <h1>Title: {blog.title}</h1>
+  <h2>Tags: {blog.tags}</h2>
+  <p>Author: {blog.author}</p>
+  <div id="content"></div>
+  <script type="module">
+    import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
+    document.getElementById("content").innerHTML = marked.parse(blog.content);
+  </script>
+</Layout>

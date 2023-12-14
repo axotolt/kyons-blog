@@ -1,0 +1,91 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import AppLayout from "@layouts/AppLayout.astro";
+import { app } from "../../../src/lib/firebase/server";
+import { getFirestore } from "firebase-admin/firestore";
+import CKEditor from "@components/CKEditor.astro";
+import { getUser } from "@lib/utils";
+
+interface Blog {
+  title: string;
+  tags: string;
+  author: string;
+  content: string;
+}
+
+/* Get session cookie */
+const sessionCookie = Astro.cookies.get("session")
+  ? Astro.cookies.get("session")!.value
+  : null;
+if (!sessionCookie) {
+  return Astro.redirect("/signin");
+}
+
+/* Verify session cookie and get user */
+const user = await getUser(sessionCookie);
+if (!user) {
+  return Astro.redirect("/signin");
+}
+
+const { id } = Astro.params;
+
+if (!id) {
+  return Astro.redirect("/404");
+}
+
+const db = getFirestore(app);
+const blogsRef = db.collection("blogs");
+const blogSnapshot = await blogsRef.doc(id).get();
+
+if (!blogSnapshot.exists) {
+  return Astro.redirect("/404");
+}
+
+const blog = blogSnapshot.data() as Blog;
+---
+
+<Layout title="Edit {blog.name}">
+  <AppLayout />
+  <h1>Edit {blog.title}</h1>
+  <p>Here you can edit or delete your blog's data.</p>
+  <form method="post" action={`/api/blogs/${id}`}>
+    <label for="title">Title</label>
+    <input type="text" id="title" name="title" value={blog.title} required />
+    <label for="tag">Tags</label>
+    <input type="text" id="tags" name="tags" value={blog.tags} />
+    <label for="author">Author: <strong>{user.displayName}</strong></label>
+    <input type="hidden" id="author" name="author" value={user.displayName} />
+    <input type="hidden" id="authorid" name="authorid" value={user.uid} />
+    <CKEditor />
+    <input type="hidden" id="editorContent" name="editorContent" />
+    <div class="flex items-center gap-4 justify-content: space-between">
+      <button
+        type="submit"
+        value="Submit"
+        class="text-violet-600 hover:text-violet-700 border border-violet-200 dark:border-violet-800 dark:hover:border-violet-500 dark:hover:text-white hover:border-violet-300 dark:text-violet-200 dark:bg-violet-800 dark:hover:bg-violet-700 bg-violet-200 px-3 py-1 rounded-md"
+        >Update</button
+      >
+      <button
+        type="button"
+        id="delete-document"
+        style="width: 80px; margin-left: auto;"
+        class="text-violet-600 hover:text-violet-700 border border-violet-200 dark:border-violet-800 dark:hover:border-violet-500 dark:hover:text-white hover:border-violet-300 dark:text-violet-200 dark:bg-violet-800 dark:hover:bg-violet-700 bg-violet-200 px-3 py-1 rounded-md"
+        >Delete</button
+      >
+    </div>
+  </form>
+</Layout>
+<script>
+  const deleteButton = document.getElementById(
+    "delete-document"
+  ) as HTMLButtonElement;
+  const url = document.querySelector("form")?.getAttribute("action") as string;
+  deleteButton.addEventListener("click", async () => {
+    const response = await fetch(url, {
+      method: "DELETE",
+    });
+    if (response.redirected) {
+      window.location.assign(response.url);
+    }
+  });
+</script>

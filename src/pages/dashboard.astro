@@ -28,14 +28,33 @@ interface Blog {
 }
 
 const db = getFirestore(app);
-const blogsRef = db.collection("blogs");
+const blogsRef = db.collection("blogs").where("authorid", "==", user.uid);
 const blogsSnapshot = await blogsRef.get();
 const blogs = blogsSnapshot.docs.map((doc) => ({
   id: doc.id,
+
   ...doc.data(),
 })) as Blog[];
 ---
 
 <Layout title="Dashboard">
   <AppLayout />
+  <h1>List of all your blogs</h1>
+  <ul>
+    {
+      blogs.map((blog) => (
+        <li>
+          <a href={`/view/${blog.id}`}>
+            Title: <strong>{blog.title}</strong>
+          </a>
+          <span>
+            {" "}
+            | Tags: <strong>{blog.tags}</strong>
+          </span>
+          by<strong> {blog.author}</strong>
+          <a href={`/blog/${blog.id}`}>Edit</a>
+        </li>
+      ))
+    }
+  </ul>
 </Layout>

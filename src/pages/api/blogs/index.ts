@@ -7,8 +7,8 @@ export const POST: APIRoute = async ({ params, redirect, request }) => {
   const title = formData.get("title")?.toString();
   const tags = formData.get("tags")?.toString();
   const author = formData.get("author")?.toString();
+  const authorid = formData.get("authorid")?.toString(); 
   const content = formData.get("content")?.toString();
-  // const isBestFriend = formData.get("isBestFriend") === "on";
 
   if (!title || !author) {
     return new Response("Missing required fields", {
@@ -22,6 +22,7 @@ export const POST: APIRoute = async ({ params, redirect, request }) => {
       title,
       tags,
       author,
+      authorid,
       content,
     });
   } catch (error) {

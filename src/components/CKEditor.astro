@@ -1,24 +1,32 @@
 ---
-export const prerender = true;
+import { app } from "../../src/lib/firebase/server";
+import { getFirestore } from "firebase-admin/firestore";
+
+const { id } = Astro.params;
+
+if (!id) {
+  var text = "Add blog content";
+} else {
+  const db = getFirestore(app);
+  const blogsRef = db.collection("blogs");
+  const blogSnapshot = await blogsRef.doc(id).get();
+  const blog = blogSnapshot.data();
+  var text = blog.content as string;
+}
 ---
 
-<textarea name="content" id="editor">
-  &lt;p&gt;This is some sample content.&lt;/p&gt;
-</textarea>
+<textarea name="content" id="editor"> {text}</textarea>
 <script>
-  import ClassicEditor from "kyons-markdown-editor";
-
-  // function ready() {
-  //   ClassicEditor.create(document.querySelector("#editor"), {});
-  // }
-  // document.addEventListener("DOMContentLoaded", ready);
-
-  ClassicEditor.create(document.querySelector("#editor"))
-    .then((editor) => {
-      const data = editor.getData();
-      console.log(data);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+  import ClassicEditor from "axotolt-markdown-editor";
+  ClassicEditor.create(document.querySelector("#editor"), {
+    licenseKey: "",
+    simpleUpload: {
+      uploadUrl: "gs://test-cbf14.appspot.com",
+      withCredentials: false,
+      headers: {
+        "X-CSRF-TOKEN": "CSRF-Token",
+        Authorization: "Bearer <JSON Web Token>",
+      },
+    },
+  });
 </script>
