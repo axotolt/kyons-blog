@@ -11,7 +11,7 @@ if (!id) {
   const blogsRef = db.collection("blogs");
   const blogSnapshot = await blogsRef.doc(id).get();
   const blog = blogSnapshot.data();
-  var text = blog.content as string;
+  var text = blog!.content as string;
 }
 ---
 

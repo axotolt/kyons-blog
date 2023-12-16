@@ -36,3 +36,14 @@ const canonicalURL = new URL(Astro.url).href;
     <slot />
   </body>
 </html>
+<style>
+  input {
+    border: 2px solid #010101;
+    padding: 8px;
+    border-radius: 4px;
+  }
+
+  input:focus {
+    border: 2px solid #007bff;
+  }
+</style>

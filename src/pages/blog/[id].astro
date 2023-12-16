@@ -8,7 +8,7 @@ import { getUser } from "@lib/utils";
 
 interface Blog {
   title: string;
-  tags: string;
+  labels: string;
   author: string;
   content: string;
 }
@@ -51,9 +51,9 @@ const blog = blogSnapshot.data() as Blog;
   <form method="post" action={`/api/blogs/${id}`}>
     <label for="title">Title</label>
     <input type="text" id="title" name="title" value={blog.title} required />
-    <label for="tag">Tags</label>
-    <input type="text" id="tags" name="tags" value={blog.tags} />
-    <label for="author">Author: <strong>{user.displayName}</strong></label>
+    <label for="tag">Labels</label>
+    <input type="text" id="labels" name="labels" value={blog.labels} />
+    <label for="author">: <strong>{user.displayName}</strong></label>
     <input type="hidden" id="author" name="author" value={user.displayName} />
     <input type="hidden" id="authorid" name="authorid" value={user.uid} />
     <CKEditor />

@@ -23,12 +23,13 @@ import { getFirestore } from "firebase-admin/firestore";
 interface Blog {
   id: string;
   title: string;
-  tags: string;
+  labels: string[];
   author: string;
 }
 
 const db = getFirestore(app);
-const blogsRef = db.collection("blogs").where("authorid", "==", user.uid);
+const blogsRef = db.collection("blogs");
+// .where("authorid", "==", user.uid);
 const blogsSnapshot = await blogsRef.get();
 const blogs = blogsSnapshot.docs.map((doc) => ({
   id: doc.id,
@@ -49,7 +50,7 @@ const blogs = blogsSnapshot.docs.map((doc) => ({
           </a>
           <span>
             {" "}
-            | Tags: <strong>{blog.tags}</strong>
+            | Labels: <strong>{blog.labels}</strong>
           </span>
           by<strong> {blog.author}</strong>
           <a href={`/blog/${blog.id}`}>Edit</a>

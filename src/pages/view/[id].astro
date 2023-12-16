@@ -5,7 +5,7 @@ import { getFirestore } from "firebase-admin/firestore";
 
 interface Blog {
   title: string;
-  tags: string;
+  labels: string[];
   author: string;
   content: string;
 }
@@ -29,7 +29,7 @@ const blog = blogSnapshot.data() as Blog;
 
 <Layout title={blog.title}>
   <h1>Title: {blog.title}</h1>
-  <h2>Tags: {blog.tags}</h2>
+  <h2>Labels: {blog.labels}</h2>
   <p>Author: {blog.author}</p>
   <div id="content"></div>
   <script type="module">
