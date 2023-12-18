@@ -1,0 +1,71 @@
+---
+import { app } from "../lib/firebase/server";
+import { getFirestore } from "firebase-admin/firestore";
+
+const db = getFirestore(app);
+const labelRef = db.collection("labels");
+const getLabels = async () => {
+  const querySnapshot = await labelRef.get();
+  const labels = [] as string[];
+  let idCounter = 1;
+  querySnapshot.forEach((doc) => {
+    labels.push(
+      ...doc
+        .data()
+        .labels.map((label: any) => ({ value: idCounter++, label: label }))
+    );
+  });
+  return labels;
+};
+const labels = await getLabels();
+---
+
+<header>
+  <ul class="menu">
+    <li>
+      <a href="/">Labels</a>
+    </li>
+    <li>
+      <a href="/services">Services</a>
+      <div class="dropdown">
+        <a>abc</a>
+      </div>
+    </li>
+  </ul>
+</header>
+
+<style>
+  li {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    list-style: none;
+    position: relative;
+  }
+  .dropdown {
+    min-width: 130px;
+    padding: 15px 10px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: absolute;
+    top: 40px;
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: rgba(0, 0, 0, 0.4) 00px 25px 50px -12px;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.2s ease-in-out;
+  }
+  li:hover .dropdown {
+    opacity: 1;
+    visibility: visible;
+    top: 60px;
+  }
+  .dropdown a {
+    font-size: 14px;
+    border-bottom: 1px solid #000;
+    padding-bottom: 10px;
+  }
+</style>

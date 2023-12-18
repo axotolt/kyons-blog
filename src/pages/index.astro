@@ -1,50 +1,61 @@
 ---
-import AppLayout from "@layouts/AppLayout.astro";
-import Layout from "@layouts/Layout.astro";
-import { firestore } from "@lib/firebase/server";
-import { getUser } from "@lib/utils";
+import { app } from "../lib/firebase/server";
+import { getAuth } from "firebase-admin/auth";
+import Layout from "../layouts/Layout.astro";
+import AppLayout from "../layouts/AppLayout.astro";
 
-/* Get session cookie */
-const sessionCookie = Astro.cookies.get("session")
-  ? Astro.cookies.get("session")!.value
-  : null;
-if (!sessionCookie) {
+const auth = getAuth(app);
+
+/* Check current session */
+if (!Astro.cookies.has("session")) {
   return Astro.redirect("/signin");
 }
+const sessionCookie = Astro.cookies.get("session")!.value;
+const decodedCookie = await auth.verifySessionCookie(sessionCookie);
+const user = await auth.getUser(decodedCookie.uid);
 
-/* Verify session cookie and get user */
-const user = await getUser(sessionCookie);
 if (!user) {
   return Astro.redirect("/signin");
 }
 
-// /* get birthdates from firestore */
-// const querySnashot = await firestore
-// .collection("blogs")
-// .where("authorId", "==", user.uid)
-// .get();
-// console.log(Editor);
-/* compute difference in days and sort */
+import { getFirestore } from "firebase-admin/firestore";
+
+interface Blog {
+  id: string;
+  title: string;
+  labels: string[];
+  author: string;
+}
+
+const db = getFirestore(app);
+const blogsRef = db.collection("blogs");
+// .where("authorid", "==", user.uid);
+const blogsSnapshot = await blogsRef.get();
+const blogs = blogsSnapshot.docs.map((doc) => ({
+  id: doc.id,
+
+  ...doc.data(),
+})) as Blog[];
 ---
 
 <Layout title="Dashboard">
-  <!-- <Editor client:only /> -->
-  <AppLayout>
-    <main class="w-full grow flex flex-col items-center px-4">
-      <h1
-        class="text-xl sm:text-3xl max-w-xl dark:text-zinc-100 w-full text-zinc-900 font-semibold mt-10 mb-6"
-      >
-        CKEditor 5
-      </h1>
-      <div id="editor" style="height: 500px;"></div>
-    </main>
-  </AppLayout>
+  <AppLayout />
+  <h1>List of all your blogs</h1>
+  <ul>
+    {
+      blogs.map((blog) => (
+        <li>
+          <a href={`/view/${blog.id}`}>
+            Title: <strong>{blog.title}</strong>
+          </a>
+          <span>
+            {" "}
+            | Labels: <strong>{blog.labels}</strong>
+          </span>
+          by<strong> {blog.author}</strong>
+          <a href={`/blog/${blog.id}`}>Edit</a>
+        </li>
+      ))
+    }
+  </ul>
 </Layout>
-<script>
-  import ClassicEditor from "axotolt-markdown-editor";
-
-  function ready() {
-    ClassicEditor.create(document.querySelector("#editor") as HTMLElement, {});
-  }
-  document.addEventListener("DOMContentLoaded", ready);
-</script>

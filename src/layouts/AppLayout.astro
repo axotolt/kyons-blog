@@ -1,7 +1,7 @@
 ---
-import { app } from "@lib/firebase/server";
+import { app } from "../lib/firebase/server";
 import { getAuth } from "firebase-admin/auth";
-import SignoutButton from "@components/SignoutButton";
+import SignoutButton from "../components/SignoutButton";
 
 const auth = getAuth(app);
 
@@ -9,7 +9,7 @@ const auth = getAuth(app);
 if (!Astro.cookies.has("session")) {
   return Astro.redirect("/signin");
 }
-const sessionCookie = Astro.cookies.get("session").value;
+const sessionCookie = Astro.cookies.get("session")!.value;
 const decodedCookie = await auth.verifySessionCookie(sessionCookie);
 const user = await auth.getUser(decodedCookie.uid);
 
@@ -48,7 +48,7 @@ if (!user) {
         </svg>
       </a>
       <SignoutButton client:idle />
-    </div>
+    </div>``
   </div>
 </nav>
 <slot />

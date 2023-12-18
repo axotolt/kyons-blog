@@ -1,0 +1,61 @@
+---
+import { app } from ".././lib/firebase/server";
+import { getFirestore } from "firebase-admin/firestore";
+
+const db = getFirestore(app);
+const labelRef = db.collection("labels");
+const getLabels = async () => {
+  const querySnapshot = await labelRef.get();
+  const labels = [] as string[];
+  //   let idCounter = 1;
+  querySnapshot.forEach((doc) => {
+    labels.push(
+      ...doc.data().labels
+      // .labels.map((label: any) => ({ value: idCounter++, label: label }))
+    );
+  });
+  return labels;
+};
+const labels = await getLabels();
+
+var selectedOptions = [] as string[]; // To store the selected option value
+---
+
+<label for="labels">Labels</label>
+<input
+  form="blogAdd"
+  type="text"
+  id="labels"
+  name="labels"
+  value={["a", "b", "c"]}
+  hidden
+/>
+
+<select id="labelList"> </select>
+
+<script define:vars={{ selectedOptions, labels }}>
+  labels.forEach((label) => {
+    const option = document.createElement("option");
+    option.value = label;
+    option.textContent = label;
+    labelList.appendChild(option);
+  });
+
+  function handleSelectionChange(event) {
+    var selectedOption = event.target.value;
+    if (selectedOptions.includes(selectedOption)) {
+      // Remove from array if already present
+      selectedOptions.splice(selectedOptions.indexOf(selectedOption), 1);
+    } else {
+      // Add to array if not present
+      selectedOptions.push(selectedOption);
+    }
+    // localStorage.setItem("localSelectedOptions", selectedOptions);
+    // console.log(localStorage.getItem("localSelectedOptions"));
+  }
+  labelList.addEventListener("change", handleSelectionChange, false);
+</script>
+
+<style>
+  /* Add your styles here */
+</style>
